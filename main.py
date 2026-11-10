@@ -1,3 +1,7 @@
+import json
+import os
+
+
 class Quiz:
        def __init__(self, question, choices, answer):
             self.question = question  # 문제 내용
@@ -6,8 +10,60 @@ class Quiz:
 
 class QuizGame:
     def __init__(self, quizzes):
-        self.quizzes = quizzes  # main에서 넘겨받은 퀴즈를 저장
-        self.best_score = 0     # 최고 점수 저장용
+        self.filename = "state.json"
+        self.default_quizzes = quizzes 
+        
+        # 게임 시작 시 파일에서 데이터 불러오기
+        self.quizzes, self.best_score = self.load_data()
+
+    # ---  파일 불러오기 (Load) ---
+    def load_data(self):
+        # state.json 파일이 아예 없는 경우 (첫 실행)
+        if not os.path.exists(self.filename):
+            print("📂 저장된 데이터 파일이 없어 기본 퀴즈를 로드합니다.")
+            return self.default_quizzes, 0
+
+        try:
+            with open(self.filename, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                
+                # 저장된 퀴즈 딕셔너리 형태를 Quiz 객체로 다시 변환
+                loaded_quizzes = []
+                for q in data.get("quizzes", []):
+                    loaded_quizzes.append(Quiz(q["question"], q["choices"], q["answer"]))
+                
+                best_score = data.get("best_score", 0)
+                
+                print(f"📂 저장된 데이터를 불러왔습니다. (퀴즈 {len(loaded_quizzes)}개, 최고점수 {best_score}점)")
+                return loaded_quizzes, best_score
+                
+        except (json.JSONDecodeError, Exception) as e:
+            # 파일이 손상되었거나 읽기 오류가 난 경우 예외 처리
+            print("⚠️ 데이터 파일이 손상되었거나 읽을 수 없습니다. 기본 데이터로 복구합니다.")
+            return self.default_quizzes, 0
+
+    # --- 🌟 파일 저장하기 (Save) ---
+    def save_data(self):
+        try:
+            # Quiz 객체 리스트를 JSON이 이해할 수 있는 딕셔너리 형태로 변환
+            quizzes_data = []
+            for q in self.quizzes:
+                quizzes_data.append({
+                    "question": q.question,
+                    "choices": q.choices,
+                    "answer": q.answer
+                })
+                
+            data = {
+                "quizzes": quizzes_data,
+                "best_score": self.best_score
+            }
+            
+            with open(self.filename, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
+            print("💾 데이터가 state.json에 안전하게 저장되었습니다.")
+        except Exception as e:
+            print(f"⚠️ 파일 저장 중 오류가 발생했습니다: {e}")
 
     def display_menu(self):
         print("\n" + "="*40)
@@ -28,7 +84,7 @@ class QuizGame:
         if not self.quizzes:
             print("현재 등록된 퀴즈가 없습니다.")
         else:
-            # enumerate를 사용하면 1번부터 순서대로 번호를 매겨서 출력해 줍니다.
+            # enumerate를 사용해서 1번부터 번호 매겨서 출력
             for i, quiz in enumerate(self.quizzes, start=1):
                 print(f"[{i}] {quiz.question}")
         print("-" * 40)
@@ -44,7 +100,7 @@ class QuizGame:
             else:
                 break
                 
-        # 2. 선택지 4개 입력 (반복문 활용)
+        # 2. 선택지 4개 입력 
         choices = []
         for i in range(1, 5):
             while True:
@@ -55,7 +111,7 @@ class QuizGame:
                     choices.append(choice)
                     break
                     
-        # 3. 정답 번호 입력 (숫자 및 1~4 범위 방어)
+        # 3. 정답 번호 입력 (숫자 및 1~4 범위)
         while True:
             answer_input = input("정답 번호 (1-4): ").strip()
             try:
@@ -70,7 +126,10 @@ class QuizGame:
         # 4. 새로운 Quiz 객체를 만들고 목록(quizzes)에 추가
         new_quiz = Quiz(question, choices, answer)
         self.quizzes.append(new_quiz)
+
+        self.save_data()
         print("✅ 퀴즈가 성공적으로 추가되었습니다!")
+
     def play_quiz(self):
         print(f"\n📝 퀴즈를 시작합니다! (총 {len(self.quizzes)}문제)")
         print("-" * 40)
@@ -82,7 +141,7 @@ class QuizGame:
         score = 0
         total = len(self.quizzes)
 
-        # 등록된 퀴즈를 하나씩 꺼내서 출제합니다.
+        # 등록된 퀴즈를 하나씩 출제
         for i, quiz in enumerate(self.quizzes, start=1):
             print(f"\n[문제 {i}]")
             print(quiz.question)
@@ -115,7 +174,7 @@ class QuizGame:
         print("\n" + "="*40)
         print(f"🏆 결과: {total}문제 중 {score}문제 정답!")
         
-        # 기존 최고 점수보다 높으면 갱신합니다.
+        # 기존 최고 점수보다 높으면 갱신
         if score > self.best_score:
             self.best_score = score
             print("🎉 새로운 최고 점수입니다!")
@@ -145,7 +204,6 @@ class QuizGame:
             if choice == 1:
                 self.play_quiz()
             elif choice == 2:
-                # 🌟 수정된 부분: 2번을 누르면 퀴즈 추가 함수를 실행합니다!
                 self.add_quiz()
             elif choice == 3:
                 self.display_quiz_list()
