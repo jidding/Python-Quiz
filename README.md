@@ -57,3 +57,15 @@ python-quiz-game/
       ],
       "best_score": 4
   }
+
+## 8. 실행 결과 예시 화면 
+### 1. 메인 메뉴
+![메인 메뉴](image/menu.PNG)
+### 2. 퀴즈 풀기
+![퀴즈 풀기](image/play.PNG)
+### 3. 퀴즈 추가
+![퀴즈 추가](image/add.PNG)
+### 4. 퀴즈 목록 확인
+![퀴즈 목록 확인](image/add_list.PNG)
+### 5. 점수 확인
+![점수 확인](image/score.PNG)
