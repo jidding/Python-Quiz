@@ -71,6 +71,61 @@ class QuizGame:
         new_quiz = Quiz(question, choices, answer)
         self.quizzes.append(new_quiz)
         print("✅ 퀴즈가 성공적으로 추가되었습니다!")
+    def play_quiz(self):
+        print(f"\n📝 퀴즈를 시작합니다! (총 {len(self.quizzes)}문제)")
+        print("-" * 40)
+        
+        if not self.quizzes:
+            print("등록된 퀴즈가 없습니다. 먼저 퀴즈를 추가해 주세요!")
+            return
+
+        score = 0
+        total = len(self.quizzes)
+
+        # 등록된 퀴즈를 하나씩 꺼내서 출제합니다.
+        for i, quiz in enumerate(self.quizzes, start=1):
+            print(f"\n[문제 {i}]")
+            print(quiz.question)
+            for j, choice in enumerate(quiz.choices, start=1):
+                print(f"{j}. {choice}")
+            
+            # 사용자 정답 입력 받기 (예외 처리 포함)
+            while True:
+                answer_input = input("\n정답 입력 (1-4): ").strip()
+                if not answer_input:
+                    print("⚠️ 값을 입력해 주세요.")
+                    continue
+                try:
+                    user_answer = int(answer_input)
+                    if 1 <= user_answer <= 4:
+                        break
+                    else:
+                        print("⚠️ 1에서 4 사이의 숫자를 입력해 주세요.")
+                except ValueError:
+                    print("⚠️ 잘못된 입력입니다. 숫자로 입력해 주세요.")
+
+            # 정답 확인
+            if user_answer == quiz.answer:
+                print("✅ 정답입니다!")
+                score += 1
+            else:
+                print(f"❌ 오답입니다. (정답: {quiz.answer}번)")
+                
+        # 결과 출력 및 최고 점수 갱신
+        print("\n" + "="*40)
+        print(f"🏆 결과: {total}문제 중 {score}문제 정답!")
+        
+        # 기존 최고 점수보다 높으면 갱신합니다.
+        if score > self.best_score:
+            self.best_score = score
+            print("🎉 새로운 최고 점수입니다!")
+        print("="*40)
+
+    # 최고 점수 확인 기능
+    def show_best_score(self):
+        print("\n" + "="*40)
+        print(f"🏆 현재 최고 점수: {self.best_score}점")
+        print("="*40)
 
     def run(self):
         while True:
@@ -88,14 +143,14 @@ class QuizGame:
                 continue
             
             if choice == 1:
-                print("🛠️ '퀴즈 풀기' 기능은 아직 개발 중입니다!")
+                self.play_quiz()
             elif choice == 2:
                 # 🌟 수정된 부분: 2번을 누르면 퀴즈 추가 함수를 실행합니다!
                 self.add_quiz()
             elif choice == 3:
                 self.display_quiz_list()
             elif choice == 4:
-                print("🛠️ '점수 확인' 기능은 아직 개발 중입니다!")
+                self.show_best_score()
             elif choice == 5:
                 print("게임을 종료합니다. 플레이해주셔서 감사합니다! 👋")
                 break 
