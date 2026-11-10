@@ -20,7 +20,7 @@ class QuizGame:
         print("5. 종료")
         print("="*40)
 
-    # --- 🌟 새로 추가된 부분: 퀴즈 목록 보기 기능 ---
+    #퀴즈 목록 보기 기능 ---
     def display_quiz_list(self):
         print(f"\n📋 등록된 퀴즈 목록 (총 {len(self.quizzes)}개)")
         print("-" * 40)
@@ -32,6 +32,45 @@ class QuizGame:
             for i, quiz in enumerate(self.quizzes, start=1):
                 print(f"[{i}] {quiz.question}")
         print("-" * 40)
+
+    def add_quiz(self):
+        print("\n📌 새로운 퀴즈를 추가합니다.")
+        
+        # 1. 문제 입력 (빈칸 방어)
+        while True:
+            question = input("문제를 입력하세요: ").strip()
+            if not question:
+                print("⚠️ 문제가 비어있습니다. 다시 입력해 주세요.")
+            else:
+                break
+                
+        # 2. 선택지 4개 입력 (반복문 활용)
+        choices = []
+        for i in range(1, 5):
+            while True:
+                choice = input(f"선택지 {i}: ").strip()
+                if not choice:
+                    print("⚠️ 선택지 내용은 비워둘 수 없습니다. 다시 입력해 주세요.")
+                else:
+                    choices.append(choice)
+                    break
+                    
+        # 3. 정답 번호 입력 (숫자 및 1~4 범위 방어)
+        while True:
+            answer_input = input("정답 번호 (1-4): ").strip()
+            try:
+                answer = int(answer_input)
+                if 1 <= answer <= 4:
+                    break
+                else:
+                    print("⚠️ 1에서 4 사이의 숫자를 입력해 주세요.")
+            except ValueError:
+                print("⚠️ 잘못된 입력입니다. 숫자로 입력해 주세요.")
+                
+        # 4. 새로운 Quiz 객체를 만들고 목록(quizzes)에 추가
+        new_quiz = Quiz(question, choices, answer)
+        self.quizzes.append(new_quiz)
+        print("✅ 퀴즈가 성공적으로 추가되었습니다!")
 
     def run(self):
         while True:
@@ -51,9 +90,9 @@ class QuizGame:
             if choice == 1:
                 print("🛠️ '퀴즈 풀기' 기능은 아직 개발 중입니다!")
             elif choice == 2:
-                print("🛠️ '퀴즈 추가' 기능은 아직 개발 중입니다!")
+                # 🌟 수정된 부분: 2번을 누르면 퀴즈 추가 함수를 실행합니다!
+                self.add_quiz()
             elif choice == 3:
-                # 🌟 수정된 부분: 3번을 누르면 방금 만든 목록 보기 함수를 실행합니다!
                 self.display_quiz_list()
             elif choice == 4:
                 print("🛠️ '점수 확인' 기능은 아직 개발 중입니다!")
