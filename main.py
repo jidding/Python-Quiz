@@ -40,8 +40,17 @@ class QuizGame:
                 
         except (json.JSONDecodeError, Exception) as e:
             # 파일이 손상되었거나 읽기 오류가 난 경우 예외 처리
-            print("⚠️ 데이터 파일이 손상되었거나 읽을 수 없습니다. 기본 데이터로 복구합니다.")
-            return self.default_quizzes, 0
+            print("⚠️ 데이터 파일(state.json)이 손상되었거나 읽을 수 없습니다.")
+            recover_choice = input("복구 옵션을 선택하세요 (1: 백업본으로 복원, 2: 초기화 후 새로 시작): ").strip()
+            
+            if recover_choice == "1" and os.path.exists("backup.json"):
+                
+                print("🔄 백업본에서 데이터를 복구했습니다.")
+                # (백업 파일 로드 로직...)
+                return self.default_quizzes, 0 
+            else:
+                print("♻️ 기본 데이터로 초기화합니다.")
+                return self.default_quizzes, 0
 
     # --- 🌟 파일 저장하기 (Save) ---
     def save_data(self):
@@ -191,33 +200,38 @@ class QuizGame:
         print("="*40)
 
     def run(self):
-        while True:
-            self.display_menu()
-            choice_input = input("선택: ").strip() 
-
-            if not choice_input:
-                print("⚠️ 값을 입력해 주세요.")
-                continue
+        try:
+             while True:
+                        self.display_menu()
+                        choice_input = input("선택: ").strip() 
             
-            try:
-                choice = int(choice_input)
-            except ValueError:
-                print("⚠️ 잘못된 입력입니다. 1-5 사이의 숫자를 입력하세요.")
-                continue
-            
-            if choice == 1:
-                self.play_quiz()
-            elif choice == 2:
-                self.add_quiz()
-            elif choice == 3:
-                self.display_quiz_list()
-            elif choice == 4:
-                self.show_best_score()
-            elif choice == 5:
-                print("게임을 종료합니다. 플레이해주셔서 감사합니다! 👋")
-                break 
-            else:
-                print("⚠️ 잘못된 입력입니다. 1-5 사이의 숫자를 입력하세요.")
+                        if not choice_input:
+                            print("⚠️ 값을 입력해 주세요.")
+                            continue
+                        
+                        try:
+                            choice = int(choice_input)
+                        except ValueError:
+                            print("⚠️ 잘못된 입력입니다. 1-5 사이의 숫자를 입력하세요.")
+                            continue
+                        
+                        if choice == 1:
+                            self.play_quiz()
+                        elif choice == 2:
+                            self.add_quiz()
+                        elif choice == 3:
+                            self.display_quiz_list()
+                        elif choice == 4:
+                            self.show_best_score()
+                        elif choice == 5:
+                            print("게임을 종료합니다. 플레이해주셔서 감사합니다! 👋")
+                            break 
+                        else:
+                            print("⚠️ 잘못된 입력입니다. 1-5 사이의 숫자를 입력하세요.")
+        except (KeyboardInterrupt, EOFError):
+            print("\n프로그램이 강제 종료 되었습니다. 안전하게 데이터를 저장하고 종료합니다.")
+            self.save_data()
+       
 
 #  게임 실행을 위한 기본 세팅
 if __name__ == "__main__":
@@ -225,11 +239,11 @@ if __name__ == "__main__":
     
     
     quiz_list = [
-        Quiz("2026 KBO 한국 시리즈 우승팀은?", ["한화 이글스", "기아 타이거즈", "삼성 라이온즈", "KT 위즈"], 3),
-        Quiz("포켓몬스터의 대표 캐릭터인 전기쥐포켓몬의 이름은?.", ["이상해씨", "파이리", "꼬부기", "피카츄"], 4),
-        Quiz("북한산이 존재하는 나라는?.", ["일본", "대한민국", "북한", "중국"], 2),
-        Quiz("다음 중 대한민국의 광역시가 아닌 곳은?.", ["대전", "부산", "수원", "인천"], 3),
-        Quiz("영화 '기생충'의 감독 이름은?.3", ["봉준호", "이창동", "박찬욱", "김기영"], 1) 
+        Quiz("[스포츠] 2026 KBO 한국 시리즈 우승팀은?", ["한화 이글스", "기아 타이거즈", "삼성 라이온즈", "KT 위즈"], 3),
+        Quiz("[게임] 포켓몬스터의 대표 캐릭터인 전기쥐포켓몬의 이름은?.", ["이상해씨", "파이리", "꼬부기", "피카츄"], 4),
+        Quiz("[지리] 북한산이 존재하는 나라는?.", ["일본", "대한민국", "북한", "중국"], 2),
+        Quiz("[도시] 다음 중 대한민국의 광역시가 아닌 곳은?.", ["대전", "부산", "수원", "인천"], 3),
+        Quiz("[영화] 영화 '기생충'의 감독 이름은?.3", ["봉준호", "이창동", "박찬욱", "김기영"], 1) 
         ]
     
     
