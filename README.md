@@ -32,6 +32,9 @@ python main.py
 점수 확인: 기록된 역대 최고 점수를 확인할 수 있습니다.
 
 예외 및 오류 방지: 빈칸 입력, 잘못된 문자(문자열) 입력, 범위를 벗어난 번호 입력 시 프로그램이 종료되지 않고 안전하게 재입력을 유도합니다.
+보너스 과제 구현 (랜덤 출제)
+- **기능 설명:** 1번 메뉴 '퀴즈 풀기' 실행 시, 매번 문제의 출제 순서가 랜덤하게 뒤섞여서 나옵니다.
+- **적용 기술 및 로직:** 파이썬 내장 `random` 모듈의 `shuffle()` 함수를 활용했습니다. 원본 퀴즈 목록(`self.quizzes`) 자체가 섞인 채로 `state.json`에 저장되는 부작용을 막기 위해, `.copy()`를 사용하여 얕은 복사본을 만든 뒤 섞어서 출제하도록 안전하게 설계했습니다.
 
 ## 6. 파일 구조
 ```text
@@ -209,7 +212,10 @@ class QuizGame:
         score = 0
         total = len(self.quizzes)
 
-        for i, quiz in enumerate(self.quizzes, start=1):
+        play_list = self.quizzes.copy()
+        random.shuffle(play_list)
+
+        for i, quiz in enumerate(play_list, start=1):
             print(f"\n[문제 {i}]")
             print(quiz.question)
             for j, choice in enumerate(quiz.choices, start=1):

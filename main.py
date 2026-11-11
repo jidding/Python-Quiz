@@ -1,5 +1,6 @@
 import json
 import os
+import random
 
 
 class Quiz:
@@ -141,8 +142,11 @@ class QuizGame:
         score = 0
         total = len(self.quizzes)
 
+        play_list = self.quizzes.copy()
+        random.shuffle(play_list)
+
         # 등록된 퀴즈를 하나씩 출제
-        for i, quiz in enumerate(self.quizzes, start=1):
+        for i, quiz in enumerate(play_list, start=1):
             print(f"\n[문제 {i}]")
             print(quiz.question)
             for j, choice in enumerate(quiz.choices, start=1):
