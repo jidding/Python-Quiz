@@ -70,7 +70,7 @@ python-quiz-game/
 ### 5. 점수 확인
 ![점수 확인](image/score.PNG)
 
-## 9. 전체 소스 코드 (요구사항 1, 2 증빙)
+## 9. 전체 소스 코드 
 > 2개 이상의 분리된 클래스(`Quiz`, `QuizGame`)와 파일 영구 저장(`state.json`, `UTF-8`) 로직이 포함된 `main.py`의 전체 코드입니다.
 
 ```python
