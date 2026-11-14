@@ -113,6 +113,7 @@ python-quiz-game/
 ```python
 import json
 import os
+import random
 
 class Quiz:
     def __init__(self, question, choices, answer):
